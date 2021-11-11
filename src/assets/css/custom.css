@@ -496,6 +496,11 @@ body {
     border-bottom-left-radius: 0;
 }
 
+.code-input {
+    margin-left: 6rem;
+    background-color: #e9ecef;
+}
+
 /* Start: Countdown */
 .dwarf-buy-form.countdown-wrapper {
     height: 240px;

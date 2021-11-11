@@ -18,12 +18,20 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
     bool public isPublicSaleActive = false;
     
     // uint256 public price = 10 ether;
-    uint256 public price = 0.1 ether;
+    uint256 public price = 0.047 ether;
     uint256 public rewardFirstLevel = 26;
     uint256 public rewardSecondLevel = 11;
     uint256 public rewardThirdLevel = 4;
 
     mapping(address => bool) public whitelist;
+
+    mapping(address => address[]) codeCreators;
+
+    struct codeInvitee {
+        address invitor;
+        string  acode;
+        string  pcode;
+    }
 
     uint256 public totalWhitelist;
     
@@ -264,6 +272,20 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
         }
         
         return inviteeInfo;
+    }
+
+    function saveCode(address account, string code) {
+        Proposal({
+                name: proposalNames[i],
+                voteCount: 0
+            }
+        codeCreators[msg.sender].push(
+            codeInvitee({
+                        invitor: account,
+                        acode: '',
+                        pcode: ''
+            })
+        );
     }
     
     // Withdraw ether from contract

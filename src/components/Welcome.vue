@@ -20,17 +20,15 @@
                 </div>
 
                 <a class="ml-5 btn btn-primary btn-xl p-3 text-uppercase bow btn-radius prim-bg sec btn-connect" @click="connect()" v-html="account ? '..'+account.substring(account.length - 4) : 'Connect'"></a>
-                <a class="ml-5 btn btn-primary btn-xl p-3 text-uppercase bow btn-radius prim-bg sec btn-connect" v-if="account" href="#inviteModal" data-bs-toggle="modal">INVITE</a>
-                <a class="ml-5 btn btn-primary btn-xl p-3 text-uppercase bow btn-radius prim-bg sec btn-connect" v-if="account" href="#createCodeModal" data-bs-toggle="modal">Get Code</a>
-
-
-                <export-excel class="ml-5 btn btn-primary btn-xl text-uppercase bow btn-radius prim-bg sec btn-connect" 
+                <!-- <a class="ml-5 btn btn-primary btn-xl p-3 text-uppercase bow btn-radius prim-bg sec btn-connect" v-if="account" href="#inviteModal" data-bs-toggle="modal">INVITE</a> -->
+                <a class="ml-5 btn btn-primary btn-xl p-3 text-uppercase bow btn-radius prim-bg sec btn-connect ms-2" v-if="account" href="#createCodeModal" data-bs-toggle="modal">Get Code</a>
+                <export-excel class="ml-5 btn btn-primary btn-xl text-uppercase bow btn-radius prim-bg sec btn-connect ms-2" 
                     :data="json_data" @click="excel()" worksheet="My Worksheet" name="DSF_statistics.xls" 
                     v-if="account===this.ownerWalletAddress">
                     SPREADSHEET                
                 </export-excel>     
-                <a class="ml-5 btn btn-primary btn-xl p-3 text-uppercase bow btn-radius prim-bg sec btn-connect" v-if="account && this.contract" @click="getInvitedList" href="#checkModal" data-bs-toggle="modal">CHECK</a>           
-                <a class="ml-5 btn btn-primary btn-xl text-uppercase btn-price-set" v-if="account && parseInt(ownerWalletAddress) == account"  href="#setPriceModal" data-bs-toggle="modal">$</a>
+                <a class="ml-5 btn btn-primary btn-xl p-3 text-uppercase bow btn-radius prim-bg sec btn-connect ms-2" v-if="account && this.contract" @click="getInvitedList" href="#checkModal" data-bs-toggle="modal">CHECK</a>           
+                <a class="ml-5 btn btn-primary btn-xl text-uppercase btn-price-set ms-2" v-if="account && parseInt(ownerWalletAddress) == account"  href="#setPriceModal" data-bs-toggle="modal">$</a>
             </div>
         </nav>
        
@@ -182,6 +180,11 @@
                                 <div class="d-flex justify-content-between nft-row-wrapper">
                                     <div class="nft-label">TOTAL AMOUNT</div>
                                     <div class="nft-balance" v-html="totalCost()"></div>
+                                </div>
+
+                                <div class="d-flex justify-content-between nft-row-wrapper">
+                                    <div class="nft-label">CODE</div>
+                                    <input type="text" class="form-control code-input" v-model="invitedCode" placeholder="Hy1UiO2A">
                                 </div>
 
                                 <div class="d-flex justify-content-center">
@@ -704,13 +707,16 @@
                         <div class="row justify-content-center">
                             <div class="col-lg-12 p-0">
                                 <div class="modal-body p-0">
-                                    <h5 class="text-uppercase bow wallet-modal-title">INVITEE</h5>
+                                    <h5 class="text-uppercase bow wallet-modal-title">Get Your CODE For Invites</h5>
                                     <div class="col-lg-11 mt-3 mb-3 mx-auto p-3 wallet-panel justify-content-center">
                                         <input type="text" class="form-control right-border-no" readonly v-model="randomCode" placeholder="LKje23KS" id="randomCodeInput">
                                         <button class="copy-icon btn btn-primary left-border-no" @click="copyText()" :disabled="!randomCode">Copy</button>
                                     </div>                                
-                                    <button class="btn btn-primary sec-bg prim col-lg-11 btn-radius btn-xl text-uppercase mb-3 bow btn-shadow" @click="makeCode(8)" type="button">
+                                    <button class="btn btn-primary sec-bg prim col-lg-4 btn-radius btn-xl text-uppercase mb-3 bow btn-shadow" @click="makeCode(8)" type="button">
                                         Create
+                                    </button>
+                                    <button class="btn btn-primary sec-bg prim col-lg-4 btn-radius btn-xl text-uppercase mb-3 ms-3 bow btn-shadow"  :disabled="!randomCode" @click="saveCode()" type="button">
+                                        Save
                                     </button>
                                 </div>
                             </div>
@@ -760,14 +766,15 @@ export default {
             inviteeWalletAddress: '',
             invitedUsers: [0, 0, 0],
             checkProcess: false,
-            randomCode: ''
+            randomCode: '',
+            invitedCode: ''
         }
     }, 
     async mounted() {
         const now = new Date() 
         // var dt = new Date( "OCTOBER 18, 2021" )
         // const launch = new Date(dt.getTime()) 
-        const launch = new Date(1634544000*1000) 
+        const launch = new Date(1634974000*1000) 
         this.time = launch - now
         await this.connect()
 
@@ -884,8 +891,9 @@ export default {
                         const fee = await this.contract.methods.preSaleMint(this.mintAmount).estimateGas({from: this.account, value: this.cost})
                         mint = await this.contract.methods.preSaleMint(this.mintAmount).send({from: this.account, value: this.cost, gas: fee})
                     } else if (this.publicSale) {
-                        const fee = await this.contract.methods.mint(this.mintAmount).estimateGas({from: this.account, value: this.cost})
-                        mint = await this.contract.methods.mint(this.mintAmount).send({from: this.account, value: this.cost, gas: fee})
+                        
+                        const fee = await this.contract.methods.mint(this.mintAmount, this.invitedCode).estimateGas({from: this.account, value: this.cost})
+                        mint = await this.contract.methods.mint(this.mintAmount, this.invitedCode).send({from: this.account, value: this.cost, gas: fee})
                     }
 
                     if (mint.status) {
@@ -932,14 +940,23 @@ export default {
             if (this.contract) {
                 try {
                     const supply = await this.contract.methods.totalSupply().call()
-
+                  
                     if (supply >= 10000) {
                         this.soldOut = true
                     }
+                 
+                    const info = await this.contract.methods.info(this.invitedCode).call()
 
-                    const info = await this.contract.methods.info().call()
+                    let invitedAddress = info[6];
+                  
+                    if (invitedAddress.slice(0,5) != '0x000' && this.invitedCode != '' && this.account != invitedAddress) {
+                        this.price = info[0] * 0.2
+                        this.total
+                    } else {
+                        this.price = info[0]
+                    }
 
-                    this.price = info[0]
+
                     if (!this.setPriceStatus) {
                         this.perPrice = this.getPerPrice()
                         this.setPriceStatus = true
@@ -952,13 +969,13 @@ export default {
                     }
 
                     this.publicSale = info[4]
-
+ 
                     if (info[4]) {
                         this.maxMinting = this.maxPublicSale
                     }
                 } catch (e) {
                     clearInterval(this.interval)
-                    this.popup('Wrong network selected.', 'Error')
+                    // this.popup('Wrong network selected.', 'Error')
                 }
             }
         },
@@ -999,33 +1016,37 @@ export default {
             }
         },
         async submit () {            
-            if (this.inviteeWalletAddress == '') {
-                this.popup('Please input wallet address.', 'Error')
-                return
-            }
-            // Validation of invitee wallet address
-            if (!Web3.utils.isAddress(this.inviteeWalletAddress)) {
-                this.popup('Please input valid wallet address', 'Error')
-                return
-            }
+            // if (this.inviteeWalletAddress == '') {
+            //     this.popup('Please input wallet address.', 'Error')
+            //     return
+            // }
+            // // Validation of invitee wallet address
+            // if (!Web3.utils.isAddress(this.inviteeWalletAddress)) {
+            //     this.popup('Please input valid wallet address', 'Error')
+            //     return
+            // }
             // Invitor invites invitee.
             try {
-                let fee = await this.contract.methods.inviteUser(this.inviteeWalletAddress).estimateGas({from: this.account})
-                await this.contract.methods.inviteUser(this.inviteeWalletAddress).send({from: this.account, gas: fee})
+                // let fee = await this.contract.methods.inviteUser(this.inviteeWalletAddress).estimateGas({from: this.account})
+                // await this.contract.methods.inviteUser(this.inviteeWalletAddress).send({from: this.account, gas: fee})
+                console.log('------->', this.invitedCode)
+                let fee = await this.contract.methods.inviteUser(this.invitedCode).estimateGas({from: this.account})
+                await this.contract.methods.inviteUser(this.invitedCode).send({from: this.account, gas: fee})
                 .then(receipt => {
                     console.log(receipt)
-                    this.popup('Invite saved', 'Success')
+                    // this.popup('Invite saved', 'Success')
                 });
 
             } catch (err) {
                 console.log("err", err)
-                this.showErrorMessage(err)
+                return
+                // this.showErrorMessage(err)
             }           
         },
         async getInvitedList () {
               console.log('account', this.account)
             if (!this.account) {
-                this.popup('Please connect your wallet', 'Error')
+                // this.popup('Please connect your wallet', 'Error')
                 return
             }
 
@@ -1117,10 +1138,29 @@ export default {
             /* Alert the copied text */
             this.popup("Copied the text: " + copyText.value, 'Success')
         },
+        async saveCode() {
+            if (this.randomCode == '') {
+                this.showErrorMessage('Create new code!');
+            }
+
+            try { 
+                    console.log('-Ddddddddddddddd>', this.randomCode)
+                    let fee = await this.contract.methods.saveCode(this.randomCode).estimateGas({from: this.account})
+                    await this.contract.methods.saveCode(this.randomCode).send({from: this.account, gas: fee})
+                    .then(receipt => {
+                        console.log('receipt===========>', receipt)
+                        this.popup("Code saved successfully", 'Success')
+                    });
+                } catch (err) {
+                    console.log("err", err)
+                    this.popup("You can not save the code", 'Error')
+                }  
+
+        },
         showErrorMessage (err) {
             let text= "Failed";
             if (err.message.indexOf('SenderNotExist') > -1) { 
-                text = "To invite People you need to be invited.  Please contact our staff"
+                // text = "To invite People you need to be invited.  Please contact our staff"
             } else if (err.message.indexOf('AccountAlreadyExist') > -1) {
                 text = "Sorry that account has been added"
             } else if (err.message.indexOf('SenderNotInvitedAccount') > -1) {

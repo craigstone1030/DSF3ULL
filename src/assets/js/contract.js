@@ -2,6 +2,11 @@ let contract = {
     abi () {
         return [
           {
+            "inputs": [],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+          },
+          {
             "anonymous": false,
             "inputs": [
               {
@@ -134,6 +139,19 @@ let contract = {
             "type": "event"
           },
           {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": false,
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+              }
+            ],
+            "name": "saveInviteCode",
+            "type": "event"
+          },
+          {
             "inputs": [
               {
                 "internalType": "address",
@@ -150,313 +168,6 @@ let contract = {
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "flipPreSale",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "flipPublicSale",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-              }
-            ],
-            "name": "inviteUser",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "_mintCount",
-                "type": "uint256"
-              }
-            ],
-            "name": "mint",
-            "outputs": [],
-            "stateMutability": "payable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "_mintCount",
-                "type": "uint256"
-              }
-            ],
-            "name": "mintReserve",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address[]",
-                "name": "addresses",
-                "type": "address[]"
-              }
-            ],
-            "name": "multipleAddressesToWhiteList",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "_mintCount",
-                "type": "uint256"
-              }
-            ],
-            "name": "preSaleMint",
-            "outputs": [],
-            "stateMutability": "payable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address[]",
-                "name": "addresses",
-                "type": "address[]"
-              }
-            ],
-            "name": "removeAddressesFromWhiteList",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "userAddress",
-                "type": "address"
-              }
-            ],
-            "name": "removeAddressFromWhiteList",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "renounceOwnership",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-              },
-              {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              }
-            ],
-            "name": "safeTransferFrom",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-              },
-              {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              },
-              {
-                "internalType": "bytes",
-                "name": "_data",
-                "type": "bytes"
-              }
-            ],
-            "name": "safeTransferFrom",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "operator",
-                "type": "address"
-              },
-              {
-                "internalType": "bool",
-                "name": "approved",
-                "type": "bool"
-              }
-            ],
-            "name": "setApprovalForAll",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "string",
-                "name": "baseURI",
-                "type": "string"
-              }
-            ],
-            "name": "setBaseURI",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "_number",
-                "type": "uint256"
-              }
-            ],
-            "name": "setMaxPreSale",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "uint256",
-                "name": "_price",
-                "type": "uint256"
-              }
-            ],
-            "name": "setPrice",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-              }
-            ],
-            "name": "setPrimeUser",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "userAddress",
-                "type": "address"
-              }
-            ],
-            "name": "singleAddressToWhiteList",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "from",
-                "type": "address"
-              },
-              {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
-              }
-            ],
-            "name": "transferFrom",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-              }
-            ],
-            "name": "transferOwnership",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-              }
-            ],
-            "name": "unInviteUser",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "withdraw",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "stateMutability": "nonpayable",
-            "type": "constructor"
           },
           {
             "inputs": [
@@ -491,6 +202,25 @@ let contract = {
             "type": "function"
           },
           {
+            "inputs": [
+              {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+              }
+            ],
+            "name": "codeGenerators",
+            "outputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
             "inputs": [],
             "name": "extraInfo",
             "outputs": [
@@ -509,6 +239,20 @@ let contract = {
             "type": "function"
           },
           {
+            "inputs": [],
+            "name": "flipPreSale",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "flipPublicSale",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
             "inputs": [
               {
                 "internalType": "uint256",
@@ -517,6 +261,25 @@ let contract = {
               }
             ],
             "name": "getApproved",
+            "outputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "string",
+                "name": "code",
+                "type": "string"
+              }
+            ],
+            "name": "getCode",
             "outputs": [
               {
                 "internalType": "address",
@@ -569,7 +332,13 @@ let contract = {
             "type": "function"
           },
           {
-            "inputs": [],
+            "inputs": [
+              {
+                "internalType": "string",
+                "name": "invitedCode",
+                "type": "string"
+              }
+            ],
             "name": "info",
             "outputs": [
               {
@@ -601,9 +370,27 @@ let contract = {
                 "internalType": "address",
                 "name": "",
                 "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
               }
             ],
             "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "string",
+                "name": "invitedCode",
+                "type": "string"
+              }
+            ],
+            "name": "inviteUser",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
           },
           {
@@ -696,6 +483,50 @@ let contract = {
             "type": "function"
           },
           {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "_mintCount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "invitedCode",
+                "type": "string"
+              }
+            ],
+            "name": "mint",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "_mintCount",
+                "type": "uint256"
+              }
+            ],
+            "name": "mintReserve",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address[]",
+                "name": "addresses",
+                "type": "address[]"
+              }
+            ],
+            "name": "multipleAddressesToWhiteList",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
             "inputs": [],
             "name": "name",
             "outputs": [
@@ -741,6 +572,19 @@ let contract = {
             "type": "function"
           },
           {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "_mintCount",
+                "type": "uint256"
+              }
+            ],
+            "name": "preSaleMint",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+          },
+          {
             "inputs": [],
             "name": "price",
             "outputs": [
@@ -751,6 +595,39 @@ let contract = {
               }
             ],
             "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "userAddress",
+                "type": "address"
+              }
+            ],
+            "name": "removeAddressFromWhiteList",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address[]",
+                "name": "addresses",
+                "type": "address[]"
+              }
+            ],
+            "name": "removeAddressesFromWhiteList",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "renounceOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
           },
           {
@@ -803,6 +680,153 @@ let contract = {
               }
             ],
             "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+              }
+            ],
+            "name": "safeTransferFrom",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bytes",
+                "name": "_data",
+                "type": "bytes"
+              }
+            ],
+            "name": "safeTransferFrom",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "string",
+                "name": "code",
+                "type": "string"
+              }
+            ],
+            "name": "saveCode",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
+              },
+              {
+                "internalType": "bool",
+                "name": "approved",
+                "type": "bool"
+              }
+            ],
+            "name": "setApprovalForAll",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "string",
+                "name": "baseURI",
+                "type": "string"
+              }
+            ],
+            "name": "setBaseURI",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "_number",
+                "type": "uint256"
+              }
+            ],
+            "name": "setMaxPreSale",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "uint256",
+                "name": "_price",
+                "type": "uint256"
+              }
+            ],
+            "name": "setPrice",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+              }
+            ],
+            "name": "setPrimeUser",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "userAddress",
+                "type": "address"
+              }
+            ],
+            "name": "singleAddressToWhiteList",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
           },
           {
@@ -883,25 +907,6 @@ let contract = {
           {
             "inputs": [
               {
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-              }
-            ],
-            "name": "tokensOfOwner",
-            "outputs": [
-              {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
                 "internalType": "uint256",
                 "name": "tokenId",
                 "type": "uint256"
@@ -913,6 +918,25 @@ let contract = {
                 "internalType": "string",
                 "name": "",
                 "type": "string"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+              }
+            ],
+            "name": "tokensOfOwner",
+            "outputs": [
+              {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
               }
             ],
             "stateMutability": "view",
@@ -948,6 +972,55 @@ let contract = {
             "inputs": [
               {
                 "internalType": "address",
+                "name": "from",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+              }
+            ],
+            "name": "transferFrom",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+              }
+            ],
+            "name": "transferOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+              }
+            ],
+            "name": "unInviteUser",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address",
                 "name": "",
                 "type": "address"
               }
@@ -961,6 +1034,13 @@ let contract = {
               }
             ],
             "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "withdraw",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
           }
         ]

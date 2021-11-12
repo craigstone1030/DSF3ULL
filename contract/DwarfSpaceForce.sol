@@ -18,20 +18,12 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
     bool public isPublicSaleActive = false;
     
     // uint256 public price = 10 ether;
-    uint256 public price = 0.047 ether;
+    uint256 public price = 0.1 ether;
     uint256 public rewardFirstLevel = 26;
     uint256 public rewardSecondLevel = 11;
     uint256 public rewardThirdLevel = 4;
 
     mapping(address => bool) public whitelist;
-
-    mapping(address => address[]) codeCreators;
-
-    struct codeInvitee {
-        address invitor;
-        string  acode;
-        string  pcode;
-    }
 
     uint256 public totalWhitelist;
     
@@ -55,6 +47,7 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
         //setBaseURI(baseURI);
     }
 
+	
     /**
     Mint reserve dwarf for the company
      */
@@ -131,7 +124,7 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
         require(payable(owner()).send(msg.value));
     }
 
-    function mint(uint256 _mintCount) public payable {
+    function mint(uint256 _mintCount, string memory invitedCode) public payable {
         uint256 supply = totalSupply();
 
         require(isPublicSaleActive,                   'Public sale is not active');
@@ -146,27 +139,41 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
             }
         }
         
-        address[] memory topLevelUsers = getTop3Account(msg.sender);
         
-        if (topLevelUsers[0] == address(0x0)) {
+        // address[] memory topLevelUsers = getTop3Account(msg.sender);
+        address invitor = getCode(invitedCode);
+        
+        if (invitor == address(0x0) || invitor == msg.sender) {
             require(payable(owner()).send(price * _mintCount));
-        } else if (topLevelUsers[0] == primeUser) {
-            require(payable(primeUser).send(price * rewardFirstLevel * _mintCount / 100));
+        } else if (invitor == primeUser) {
+            if (bytes(invitedCode).length != 0 && invitor != address(0x0) ) {
+                 require(payable(primeUser).send(price * rewardFirstLevel * _mintCount / 5 * 100));
+            } else {
+                 require(payable(primeUser).send(price * rewardFirstLevel * _mintCount / 100));
+            }
+           
+            require(payable(owner()).send(price * (100 - rewardFirstLevel) * _mintCount / 100));ubli
+        } 
+        // else if (topLevelUsers[1] == primeUser) {
+        //     require(payable(topLevelUsers[0]).send(price * rewardFirstLevel * _mintCount / 100));
+        //     require(payable(primeUser).send(price * rewardSecondLevel * _mintCount / 100));
+        //     require(payable(owner()).send(price * (100 - rewardFirstLevel - rewardSecondLevel) * _mintCount / 100));
+        // } else if (topLevelUsers[2] == primeUser) {
+        //     require(payable(topLevelUsers[0]).send(price * rewardFirstLevel * _mintCount / 100));
+        //     require(payable(topLevelUsers[1]).send(price * rewardSecondLevel * _mintCount / 100));
+        //     require(payable(primeUser).send(price * rewardThirdLevel * _mintCount / 100));
+        //     require(payable(owner()).send(price * (100 - rewardFirstLevel - rewardSecondLevel - rewardThirdLevel) * _mintCount / 100));
+        // } 
+        else {
+            if (bytes(invitedCode).length != 0 && invitor != address(0x0) ) {
+                 require(payable(invitor).send(price * rewardFirstLevel * _mintCount / 5 * 100));
+            } else {
+                 require(payable(invitor).send(price * rewardFirstLevel * _mintCount / 100));
+            }
+
+            // require(payable(topLevelUsers[1]).send(price * rewardSecondLevel * _mintCount / 100));
+            // require(payable(topLevelUsers[2]).send(price * rewardThirdLevel * _mintCount / 100));
             require(payable(owner()).send(price * (100 - rewardFirstLevel) * _mintCount / 100));
-        } else if (topLevelUsers[1] == primeUser) {
-            require(payable(topLevelUsers[0]).send(price * rewardFirstLevel * _mintCount / 100));
-            require(payable(primeUser).send(price * rewardSecondLevel * _mintCount / 100));
-            require(payable(owner()).send(price * (100 - rewardFirstLevel - rewardSecondLevel) * _mintCount / 100));
-        } else if (topLevelUsers[2] == primeUser) {
-            require(payable(topLevelUsers[0]).send(price * rewardFirstLevel * _mintCount / 100));
-            require(payable(topLevelUsers[1]).send(price * rewardSecondLevel * _mintCount / 100));
-            require(payable(primeUser).send(price * rewardThirdLevel * _mintCount / 100));
-            require(payable(owner()).send(price * (100 - rewardFirstLevel - rewardSecondLevel - rewardThirdLevel) * _mintCount / 100));
-        } else {
-            require(payable(topLevelUsers[0]).send(price * rewardFirstLevel * _mintCount / 100));
-            require(payable(topLevelUsers[1]).send(price * rewardSecondLevel * _mintCount / 100));
-            require(payable(topLevelUsers[2]).send(price * rewardThirdLevel * _mintCount / 100));
-            require(payable(owner()).send(price * (100 - rewardFirstLevel - rewardSecondLevel - rewardThirdLevel) * _mintCount / 100));
         }
     }
 
@@ -205,8 +212,10 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
         return tokenIds;
     }
 
-    function info() public view returns (uint256, uint256, uint256, bool, bool, address) {
-        return (price, maxPreSaleMint, maxPublicSaleMint, isPreSaleActive, isPublicSaleActive, primeUser);
+    function info(string memory invitedCode) public view returns (uint256, uint256, uint256, bool, bool, address, address) {
+        address invitedAddress;
+        invitedAddress = getCode(invitedCode);
+        return (price, maxPreSaleMint, maxPublicSaleMint, isPreSaleActive, isPublicSaleActive, primeUser, invitedAddress);
     }
     
     function extraInfo() public view returns (address, address[] memory) {
@@ -274,20 +283,7 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
         return inviteeInfo;
     }
 
-    function saveCode(address account, string code) {
-        Proposal({
-                name: proposalNames[i],
-                voteCount: 0
-            }
-        codeCreators[msg.sender].push(
-            codeInvitee({
-                        invitor: account,
-                        acode: '',
-                        pcode: ''
-            })
-        );
-    }
-    
+
     // Withdraw ether from contract
     function withdraw() public onlyOwner {
         require(address(this).balance > 0, "Balance must be positive");

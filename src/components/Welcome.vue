@@ -27,7 +27,7 @@
                     v-if="account===this.ownerWalletAddress">
                     SPREADSHEET                
                 </export-excel>     
-                <a class="ml-5 btn btn-primary btn-xl p-3 text-uppercase bow btn-radius prim-bg sec btn-connect ms-2" v-if="account && this.contract" @click="getInvitedList" href="#checkModal" data-bs-toggle="modal">CHECK</a>           
+                <!-- <a class="ml-5 btn btn-primary btn-xl p-3 text-uppercase bow btn-radius prim-bg sec btn-connect ms-2" v-if="account && this.contract" @click="getInvitedList" href="#checkModal" data-bs-toggle="modal">CHECK</a>            -->
                 <a class="ml-5 btn btn-primary btn-xl text-uppercase btn-price-set ms-2" v-if="account && parseInt(ownerWalletAddress) == account"  href="#setPriceModal" data-bs-toggle="modal">$</a>
             </div>
         </nav>
@@ -622,7 +622,7 @@
                                                     Level{{index + 1}} * 
                                                     <span v-text="invitedUsers[index]">0</span>
                                                     people = 
-                                                    <span v-text="getExactPrice(invitedUsers[index] * perPrice * profits[index])">0</span>
+                                                    <span v-text="getExactPrice(invitedUsers[index] * perPrice * profits)">0</span>
                                                     MATIC
                                                 </span>                                                                                                             
                                             </div>
@@ -632,7 +632,7 @@
                                             <div class="justify-content-center">
                                                 <span class="bow wallet-panel-title sec">
                                                     POTENTIAL EARNINGS = 
-                                                    <span v-text="getExactPrice(perPrice * (profits[0] * invitedUsers[0] + profits[1] * invitedUsers[1] + profits[2] * invitedUsers[2]))">0</span>
+                                                    <span v-text="getExactPrice(perPrice * (profits * invitedUsers[0]))">0</span>
                                                     MATIC
                                                 </span>
                                                 <span class="bow wallet-panel-title"></span>                                        
@@ -711,13 +711,20 @@
                                     <div class="col-lg-11 mt-3 mb-3 mx-auto p-3 wallet-panel justify-content-center">
                                         <input type="text" class="form-control right-border-no" readonly v-model="randomCode" placeholder="LKje23KS" id="randomCodeInput">
                                         <button class="copy-icon btn btn-primary left-border-no" @click="copyText()" :disabled="!randomCode">Copy</button>
-                                    </div>                                
-                                    <button class="btn btn-primary sec-bg prim col-lg-4 btn-radius btn-xl text-uppercase mb-3 bow btn-shadow" @click="makeCode(8)" type="button">
-                                        Create
-                                    </button>
-                                    <button class="btn btn-primary sec-bg prim col-lg-4 btn-radius btn-xl text-uppercase mb-3 ms-3 bow btn-shadow"  :disabled="!randomCode" @click="saveCode()" type="button">
-                                        Save
-                                    </button>
+                                    </div> 
+                                    <div v-if="!saveCodeStatus">
+                                        <button class="btn btn-primary sec-bg prim col-lg-4 btn-radius btn-xl text-uppercase mb-3 bow btn-shadow" @click="makeCode(8)" type="button">
+                                            Create
+                                        </button>
+                                        <button class="btn btn-primary sec-bg prim col-lg-4 btn-radius btn-xl text-uppercase mb-3 ms-3 bow btn-shadow"  :disabled="!randomCode" @click="saveCode()" type="button">
+                                            Save
+                                        </button>
+                                    </div>
+
+                                    <button type="button" v-else class="sec-bg prim col-lg-11 btn-radius btn-xl text-uppercase mb-3 bow btn-shadow" disabled>
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        SAVING...
+                                    </button> 
                                 </div>
                             </div>
                         </div>
@@ -743,7 +750,7 @@ export default {
             json_data: [],
             ownerWalletAddress: '0x360e61C8486695085d3e4208C245597C7F68945c',
             smartContractOwner: '',
-            profits: [0.26, 0.11, 0.4] ,
+            profits: 0.26 ,
             web3: null,
             balance: 0,
             account: null,
@@ -766,6 +773,7 @@ export default {
             inviteeWalletAddress: '',
             invitedUsers: [0, 0, 0],
             checkProcess: false,
+            saveCodeStatus: false,
             randomCode: '',
             invitedCode: ''
         }
@@ -797,7 +805,7 @@ export default {
     methods : {
         nftPrice() {
             if (this.price) {
-                return this.web3.utils.fromWei(this.price) + ' MATIC'
+                return this.web3.utils.fromWei(this.price.toString()) + ' MATIC'
             } else {
                 return '-'
             }
@@ -808,7 +816,7 @@ export default {
         },
         getPerPrice() {
             if (this.price) {
-                return this.web3.utils.fromWei(this.price)
+                return this.web3.utils.fromWei(this.price.toString())
             } else {
                 return '-'
             }
@@ -886,26 +894,34 @@ export default {
             if (this.contract) {
                 try {
                     this.minting = true
+
+                    console.log('--------------',this.cost)
                     let mint = null
                     if (this.preSale) {
                         const fee = await this.contract.methods.preSaleMint(this.mintAmount).estimateGas({from: this.account, value: this.cost})
                         mint = await this.contract.methods.preSaleMint(this.mintAmount).send({from: this.account, value: this.cost, gas: fee})
                     } else if (this.publicSale) {
-                        
+                        console.log('ddddd', this.cost)
                         const fee = await this.contract.methods.mint(this.mintAmount, this.invitedCode).estimateGas({from: this.account, value: this.cost})
+                        
+                        console.log(mint)// const fee = 100000000
+                        console.log(fee)
                         mint = await this.contract.methods.mint(this.mintAmount, this.invitedCode).send({from: this.account, value: this.cost, gas: fee})
                     }
-
+                  
                     if (mint.status) {
                         this.minting = false
+                     
                         this.popup('Dwarfs minted successfully. <a target="_blank" href="'+process.env.VUE_APP_EXPLORER_URL+mint.transactionHash+'">'+mint.transactionHash+'</a>', 'Success')
                     }
                 } catch (e) {
                     this.minting = false
+                  
                     var error = e.message.substring(
                         e.message.indexOf("'") + 1, 
                         e.message.lastIndexOf("'")
                     )
+                  
                     if (error) {
                         error = JSON.parse(error)
                         if (error.value.message) {
@@ -926,7 +942,7 @@ export default {
                         }
                         if (e.message.includes('{')) {
                             error = e.message.substr(0, e.message.indexOf('{'));
-                            if (error) {
+                            if (error) { console.log('dddd')
                                 this.popup(error, 'Error')
                                 return
                             }
@@ -948,14 +964,15 @@ export default {
                     const info = await this.contract.methods.info(this.invitedCode).call()
 
                     let invitedAddress = info[6];
-                  
-                    if (invitedAddress.slice(0,5) != '0x000' && this.invitedCode != '' && this.account != invitedAddress) {
-                        this.price = info[0] * 0.2
-                        this.total
+                    console.log(this.account)
+                    console.log(invitedAddress)
+                    console.log(info[0])
+                    if (invitedAddress.slice(0,5) != '0x000' && this.invitedCode != '' && this.account != invitedAddress.toLowerCase()) {
+                        console.log('asdfadsf')
+                        this.price = info[0] * 0.8
                     } else {
                         this.price = info[0]
                     }
-
 
                     if (!this.setPriceStatus) {
                         this.perPrice = this.getPerPrice()
@@ -1029,7 +1046,7 @@ export default {
             try {
                 // let fee = await this.contract.methods.inviteUser(this.inviteeWalletAddress).estimateGas({from: this.account})
                 // await this.contract.methods.inviteUser(this.inviteeWalletAddress).send({from: this.account, gas: fee})
-                console.log('------->', this.invitedCode)
+
                 let fee = await this.contract.methods.inviteUser(this.invitedCode).estimateGas({from: this.account})
                 await this.contract.methods.inviteUser(this.invitedCode).send({from: this.account, gas: fee})
                 .then(receipt => {
@@ -1143,15 +1160,18 @@ export default {
                 this.showErrorMessage('Create new code!');
             }
 
+            this.saveCodeStatus = true
             try { 
                     console.log('-Ddddddddddddddd>', this.randomCode)
                     let fee = await this.contract.methods.saveCode(this.randomCode).estimateGas({from: this.account})
                     await this.contract.methods.saveCode(this.randomCode).send({from: this.account, gas: fee})
                     .then(receipt => {
+                         this.saveCodeStatus = false
                         console.log('receipt===========>', receipt)
                         this.popup("Code saved successfully", 'Success')
                     });
                 } catch (err) {
+                    this.saveCodeStatus = false
                     console.log("err", err)
                     this.popup("You can not save the code", 'Error')
                 }  

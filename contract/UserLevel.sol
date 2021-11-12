@@ -9,15 +9,41 @@ contract UserLevel {
 
 	address[] users;
 
+    struct codeInvitee {
+        address invitor;
+        string  acode;
+        string  pcode;
+    }
+
+    mapping(address => codeInvitee[]) codeCreators;
+
+    mapping(string => address) public codeGenerators;
+   
 	event UserInvited(address sender, address account);
 	event UserUnInvited(address sender, address account);
+	event saveInviteCode(address sender);
 
-	function inviteUser( address account ) public {
-	    require(isExistUser(msg.sender), "SenderNotExist");
+    function saveCode(string memory code) public {
+       codeGenerators[code] = msg.sender;
+       emit saveInviteCode(msg.sender);
+    }
+    
+    function getCode(string memory code) public view returns  (address)  {
+       address invitor;
+    //   codeGenerators[code] = msg.sender;
+       invitor =  codeGenerators[code];
+       return invitor;
+    } 
+    
+	function inviteUser( string memory invitedCode ) public {
+	    address account;
+	    account = msg.sender;
+	   // require(isExistUser(msg.sender), "SenderNotExist");
         require(!isExistUser(account), "AccountAlreadyExist");
 
         users.push(account);
-        inviterMap[msg.sender].push(account);
+        address invitdUser = codeGenerators[invitedCode];
+        inviterMap[invitdUser].push(account);
         topAccountMap[account] = msg.sender;
         
         emit UserInvited(msg.sender, account);

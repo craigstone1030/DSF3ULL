@@ -126,7 +126,10 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
 
     function mint(uint256 _mintCount, string memory invitedCode) public payable {
         uint256 supply = totalSupply();
-
+        address invitor = getCode(invitedCode);
+        if (bytes(invitedCode).length != 0 && invitor != address(0x0) && invitor != msg.sender ) {
+            price = price * 4/5;
+        }
         require(isPublicSaleActive,                   'Public sale is not active');
         require(_mintCount > 0,                       'Dwarf count can not be 0');
         require(_mintCount <= maxPublicSaleMint,      string(abi.encodePacked('You can only mint ', maxPublicSaleMint.toString(), ' dwarfs in one transaction')));
@@ -141,18 +144,12 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
         
         
         // address[] memory topLevelUsers = getTop3Account(msg.sender);
-        address invitor = getCode(invitedCode);
         
         if (invitor == address(0x0) || invitor == msg.sender) {
             require(payable(owner()).send(price * _mintCount));
         } else if (invitor == primeUser) {
-            if (bytes(invitedCode).length != 0 && invitor != address(0x0) ) {
-                 require(payable(primeUser).send(price * rewardFirstLevel * _mintCount / 5 * 100));
-            } else {
-                 require(payable(primeUser).send(price * rewardFirstLevel * _mintCount / 100));
-            }
-           
-            require(payable(owner()).send(price * (100 - rewardFirstLevel) * _mintCount / 100));ubli
+            require(payable(primeUser).send(price * rewardFirstLevel * _mintCount / 100));
+            require(payable(owner()).send(price * (100 - rewardFirstLevel) * _mintCount / 100));
         } 
         // else if (topLevelUsers[1] == primeUser) {
         //     require(payable(topLevelUsers[0]).send(price * rewardFirstLevel * _mintCount / 100));
@@ -165,16 +162,14 @@ contract DwarfSpaceForce is ERC721Enumerable, Ownable, UserLevel {
         //     require(payable(owner()).send(price * (100 - rewardFirstLevel - rewardSecondLevel - rewardThirdLevel) * _mintCount / 100));
         // } 
         else {
-            if (bytes(invitedCode).length != 0 && invitor != address(0x0) ) {
-                 require(payable(invitor).send(price * rewardFirstLevel * _mintCount / 5 * 100));
-            } else {
-                 require(payable(invitor).send(price * rewardFirstLevel * _mintCount / 100));
-            }
-
+            require(payable(invitor).send(price * rewardFirstLevel * _mintCount / 100));
+            require(payable(owner()).send(price * (100 - rewardFirstLevel) * _mintCount / 100));
             // require(payable(topLevelUsers[1]).send(price * rewardSecondLevel * _mintCount / 100));
             // require(payable(topLevelUsers[2]).send(price * rewardThirdLevel * _mintCount / 100));
-            require(payable(owner()).send(price * (100 - rewardFirstLevel) * _mintCount / 100));
+           
         }
+        
+        price = 0.1 ether;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {

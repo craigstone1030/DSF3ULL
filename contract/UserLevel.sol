@@ -19,7 +19,7 @@ contract UserLevel {
 
     mapping(string => address) public codeGenerators;
    
-	event UserInvited(address sender, address account);
+    event UserInvited(address sender, address account);
 	event UserUnInvited(address sender, address account);
 	event saveInviteCode(address sender);
 
@@ -28,11 +28,14 @@ contract UserLevel {
        emit saveInviteCode(msg.sender);
     }
     
-    function getCode(string memory code) public view returns  (address)  {
-       address invitor;
-    //   codeGenerators[code] = msg.sender;
-       invitor =  codeGenerators[code];
-       return invitor;
+    function getCode(string memory code) public view returns (address)  {
+        // address invitor;
+        //   codeGenerators[code] = msg.sender;
+         if (codeGenerators[code] == address(0x0)) return address(0x0);
+         else {
+               
+             return codeGenerators[code];
+         }
     } 
     
 	function inviteUser( string memory invitedCode ) public {
